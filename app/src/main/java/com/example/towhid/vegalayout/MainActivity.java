@@ -1,12 +1,17 @@
 package com.example.towhid.vegalayout;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.stone.vega.library.VegaLayoutManager;
 
@@ -22,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
         recyclerView.setLayoutManager(new VegaLayoutManager());
         adapter = getAdapter();
@@ -31,19 +35,20 @@ public class MainActivity extends AppCompatActivity {
 
         redColor = getResources().getColor(R.color.red);
         greenColor = getResources().getColor(R.color.green);
-
         prepareDataList();
         adapter.notifyDataSetChanged();
 
-
     }
+
 
     private RecyclerView.Adapter getAdapter() {
         final LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
         RecyclerView.Adapter adapter = new RecyclerView.Adapter() {
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
                 View view = inflater.inflate(R.layout.recycler_item, parent, false);
+
                 return new MyViewHolder(view);
             }
 
@@ -51,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
             public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
                 MyViewHolder myHolder = (MyViewHolder) holder;
                 myHolder.bindData(dataList.get(position));
+
             }
 
             @Override
@@ -62,26 +68,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
-
+        LinearLayout linearLayout;
         TextView nameTv;
         TextView currentPriceTv;
 
         TextView grossTv;
+        String s;
 
         public MyViewHolder(View itemView) {
             super(itemView);
+            linearLayout=itemView.findViewById(R.id.linch);
             this.nameTv = (TextView) itemView.findViewById(R.id.item_name_tv);
             this.currentPriceTv = (TextView) itemView.findViewById(R.id.item_current_price);
 
+
             this.grossTv = (TextView) itemView.findViewById(R.id.item_gross);
+            linearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(MainActivity.this,s, Toast.LENGTH_SHORT).show();
+                    Intent intent=new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com"));
+                    startActivity(intent);
+                }
+            });
         }
 
         public void bindData(StockEntity stockEntity) {
             nameTv.setText(stockEntity.getName());
             currentPriceTv.setText("$" + stockEntity.getPrice());
-            
             grossTv.setText(stockEntity.getGross());
             grossTv.setTextColor(stockEntity.getFlag() > 0 ? redColor : greenColor);
+            s=stockEntity.getName();
         }
     }
 
